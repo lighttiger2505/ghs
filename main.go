@@ -144,6 +144,12 @@ var commandUser = cli.Command{
 }
 
 func doRepository(c *cli.Context) error {
+
+	// Validate args and flags
+	if len(c.Args()) < 1 {
+		return cli.NewExitError("is not input query", 1)
+	}
+
 	ctx := context.Background()
 	client := github.NewClient(nil)
 
