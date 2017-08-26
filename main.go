@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/google/go-github/github"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"net/http"
@@ -42,7 +44,7 @@ var commandRepository = cli.Command{
 	Usage:   "Search repositorys",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:  "q",
+			Name:  "query",
 			Usage: "The search keywords, as well as any qualifiers.",
 		},
 		cli.StringFlag{
@@ -54,70 +56,74 @@ var commandRepository = cli.Command{
 			Usage: "The sort order if sort parameter is provided. One of asc or desc. Default: desc",
 		},
 	},
-	Action: func(c *cli.Context) error {
-		SearchRepository(c.String("q"), c.String("sort"), c.String("order"))
-		return nil
-	},
+	Action: doRepository,
 }
 
 var commandCommit = cli.Command{
 	Name:    "commit",
 	Aliases: []string{"m"},
 	Usage:   "Search commits",
-	Action: func(c *cli.Context) error {
-		SearchCommit()
-		return nil
-	},
+	Action:  doCommit,
 }
 
 var commandCode = cli.Command{
 	Name:    "code",
 	Aliases: []string{"c"},
 	Usage:   "Search codes",
-	Action: func(c *cli.Context) error {
-		SearchCode()
-		return nil
-	},
+	Action:  doCode,
 }
 
 var commandIssue = cli.Command{
 	Name:    "issue",
 	Aliases: []string{"i"},
 	Usage:   "Search issues",
-	Action: func(c *cli.Context) error {
-		SearchIssue()
-		return nil
-	},
+	Action:  doIssue,
 }
 
 var commandUser = cli.Command{
 	Name:    "user",
 	Aliases: []string{"u"},
 	Usage:   "Search users",
-	Action: func(c *cli.Context) error {
-		SearchUser()
-		return nil
-	},
+	Action:  doUser,
 }
 
-func SearchRepository(q string, sort string, order string) {
-	fmt.Println(GetRequest("https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"))
+func doRepository(c *cli.Context) error {
+	ctx := context.Background()
+	client := github.NewClient(nil)
+
+	// Setting search option
+	opts := &github.SearchOptions{
+		Sort:        c.String("sort"),
+		Order:       c.String("order"),
+		TextMatch:   false,
+		ListOptions: github.ListOptions{PerPage: 10, Page: 1},
+	}
+
+	// Do repository search
+	result, _, err := client.Search.Repositories(ctx, c.String("query"), opts)
+
+	// Draw result
+	for _, repo := range result.Repositories {
+		fmt.Println(*repo.FullName)
+	}
+
+	return err
 }
 
-func SearchCommit() {
-	fmt.Println(GetRequest("https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"))
+func doCommit(c *cli.Context) error {
+	return nil
 }
 
-func SearchCode() {
-	fmt.Println(GetRequest("https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"))
+func doIssue(c *cli.Context) error {
+	return nil
 }
 
-func SearchIssue() {
-	fmt.Println(GetRequest("https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"))
+func doUser(c *cli.Context) error {
+	return nil
 }
 
-func SearchUser() {
-	fmt.Println(GetRequest("https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"))
+func doCode(c *cli.Context) error {
+	return nil
 }
 
 func GetRequest(url string) string {
