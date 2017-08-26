@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
 	"github.com/urfave/cli"
 	"io/ioutil"
@@ -164,8 +165,13 @@ func doRepository(c *cli.Context) error {
 		ListOptions: github.ListOptions{PerPage: 100, Page: 1},
 	}
 
+	// Draw spinner
+	s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
+	s.Start()
 	// Do repository search
 	result, _, err := client.Search.Repositories(ctx, c.String("query"), opts)
+	// Clear spinner
+	s.Stop()
 
 	// Draw result
 	for _, repo := range result.Repositories {
