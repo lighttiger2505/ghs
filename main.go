@@ -153,12 +153,15 @@ func doRepository(c *cli.Context) error {
 	ctx := context.Background()
 	client := github.NewClient(nil)
 
+	// Building search query
+	query := BuildQuery(c)
+
 	// Setting search option
 	opts := &github.SearchOptions{
 		Sort:        c.String("sort"),
 		Order:       c.String("order"),
 		TextMatch:   false,
-		ListOptions: github.ListOptions{PerPage: 10, Page: 1},
+		ListOptions: github.ListOptions{PerPage: 100, Page: 1},
 	}
 
 	// Do repository search
@@ -170,6 +173,35 @@ func doRepository(c *cli.Context) error {
 	}
 
 	return err
+}
+
+func BuildQuery(c *cli.Context) string {
+	var query []string
+	ignoreFlags := []string{
+		"sort",
+		"order",
+		"only",
+		"oneline",
+		"table",
+	}
+
+	for _, flagName := range c.FlagNames() {
+		ignore := false
+		for _, ignoreFlag := range ignoreFlags {
+			if ignoreFlag == flagName {
+				ignore = true
+			}
+		}
+		if ignore == true {
+			continue
+		}
+
+		if c.String(flagName) != "" {
+			query = append(query, flagName+":"+c.String(flagName))
+		}
+	}
+	query = append(query, c.Args()[0])
+	return strings.Join(query, " ")
 }
 
 func doCommit(c *cli.Context) error {
