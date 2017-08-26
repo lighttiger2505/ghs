@@ -40,20 +40,76 @@ func newApp() *cli.App {
 
 var commandRepository = cli.Command{
 	Name:    "repository",
-	Aliases: []string{"repo, r"},
+	Aliases: []string{"repo", "r"},
 	Usage:   "Search repositorys",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:  "query",
-			Usage: "The search keywords, as well as any qualifiers.",
+			Name:  "in",
+			Usage: "The in qualifier limits what fields are searched. With this qualifier you can restrict the search to just the repository name, description, README, or any combination of these. Without the qualifier, only the name and description are searched.",
 		},
 		cli.StringFlag{
-			Name:  "sort",
+			Name:  "size",
+			Usage: "The size qualifier finds repositories that match a certain size (in kilobytes), using greater than, less than, and range qualifiers.",
+		},
+		cli.StringFlag{
+			Name:  "mirror",
+			Usage: "You can search repositories based on whether or not they're a mirror and are hosted elsewhere.",
+		},
+		cli.StringFlag{
+			Name:  "forks",
+			Usage: " The forks qualifier specifies the number of forks a repository should have, using greater than, less than, and range qualifiers.",
+		},
+		cli.StringFlag{
+			Name:  "created",
+			Usage: "You can filter repositories based on time of creation or time of last update. For repository creation, you can use the created qualifier; to find out when a repository was last updated, you'll want to use the pushed qualifier. The pushed qualifier will return a list of repositories, sorted by the most recent commit made on any branch in the repository.",
+		},
+		cli.StringFlag{
+			Name:  "pushed",
+			Usage: "You can filter repositories based on time of creation or time of last update. For repository creation, you can use the created qualifier; to find out when a repository was last updated, you'll want to use the pushed qualifier. The pushed qualifier will return a list of repositories, sorted by the most recent commit made on any branch in the repository.",
+		},
+		cli.StringFlag{
+			Name:  "user",
+			Usage: "To grab a list of a user's repositories.",
+		},
+		cli.StringFlag{
+			Name:  "org",
+			Usage: "To grab a list of a organization's repositories.",
+		},
+		cli.StringFlag{
+			Name:  "topic",
+			Usage: "You can find all of the repositories that are classified with a particular topic.",
+		},
+		cli.StringFlag{
+			Name:  "topics",
+			Usage: "You can find repositories by the number of applied topics, using the topics qualifier along with greater than, less than, and range qualifiers.",
+		},
+		cli.StringFlag{
+			Name:  "language",
+			Usage: "You can also search repositories based on what language they're written in.",
+		},
+		cli.StringFlag{
+			Name:  "stars",
+			Usage: "You can search repositories based on the number of stars a repository has, using greater than, less than, and range qualifiers",
+		},
+		cli.StringFlag{
+			Name:  "sort, s",
 			Usage: "The sort field. One of stars, forks, or updated. Default: results are sorted by best match.",
 		},
 		cli.StringFlag{
-			Name:  "order",
+			Name:  "order, o",
 			Usage: "The sort order if sort parameter is provided. One of asc or desc. Default: desc",
+		},
+		cli.BoolFlag{
+			Name:  "only",
+			Usage: "Draw repository full name only",
+		},
+		cli.BoolFlag{
+			Name:  "oneline",
+			Usage: "Draw repository online",
+		},
+		cli.BoolFlag{
+			Name:  "table",
+			Usage: "Draw table",
 		},
 	},
 	Action: doRepository,
