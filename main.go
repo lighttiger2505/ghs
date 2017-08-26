@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
+	"github.com/olekukonko/tablewriter"
+	// "github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 )
 
 func main() {
@@ -168,14 +172,18 @@ func doRepository(c *cli.Context) error {
 	// Draw spinner
 	s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 	s.Start()
+
 	// Do repository search
-	result, _, err := client.Search.Repositories(ctx, c.String("query"), opts)
+	result, resp, err := client.Search.Repositories(ctx, query, opts)
+
+	fmt.Println(resp.Request.URL)
+
 	// Clear spinner
 	s.Stop()
 
-	// Draw result
-	for _, repo := range result.Repositories {
-		fmt.Println(*repo.FullName)
+	if err == nil {
+		// Draw result content
+		DrawTable(result.Repositories)
 	}
 
 	return err
@@ -208,6 +216,44 @@ func BuildQuery(c *cli.Context) string {
 	}
 	query = append(query, c.Args()[0])
 	return strings.Join(query, " ")
+}
+
+func DrawOnly([]github.Repository) {
+}
+
+func DrawOneline([]github.Repository) {
+}
+
+func DrawTable(repos []github.Repository) {
+	fmt.Println(len(repos))
+
+	var datas [][]string
+	for _, repo := range repos {
+		var desc string
+		if repo.Description != nil {
+			desc = *repo.Description
+		}
+		var lang string
+		if repo.Language != nil {
+			lang = *repo.Language
+		}
+
+		data := []string{
+			*repo.FullName,
+			fmt.Sprint(*repo.StargazersCount),
+			lang,
+			desc,
+		}
+		datas = append(datas, data)
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Star", "Language", "Description"})
+
+	for _, data := range datas {
+		table.Append(data)
+	}
+	table.Render()
 }
 
 func doCommit(c *cli.Context) error {
