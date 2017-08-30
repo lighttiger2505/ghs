@@ -99,6 +99,16 @@ var commandRepository = cli.Command{
 			Value: "desc",
 			Usage: "The sort order if sort parameter is provided. One of asc or desc.",
 		},
+		cli.IntFlag{
+			Name:  "num, n",
+			Value: 10,
+			Usage: "Display num of search results.",
+		},
+		cli.IntFlag{
+			Name:  "page, p",
+			Value: 1,
+			Usage: "Display page of search results.",
+		},
 		cli.BoolFlag{
 			Name:  "only",
 			Usage: "Draw repository full name only",
@@ -161,7 +171,7 @@ func doRepository(c *cli.Context) error {
 		Sort:        c.String("sort"),
 		Order:       c.String("order"),
 		TextMatch:   false,
-		ListOptions: github.ListOptions{PerPage: 100, Page: 1},
+		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
 	}
 
 	// Draw spinner
