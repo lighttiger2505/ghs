@@ -189,22 +189,28 @@ func doRepository(c *cli.Context) error {
 
 func BuildQuery(c *cli.Context) string {
 	var query []string
-	ignoreFlags := []string{
-		"sort",
-		"order",
-		"only",
-		"oneline",
-		"table",
+	queryFlags := []string{
+		"created",
+		"pushed",
+		"forks",
+		"in",
+		"language",
+		"repo",
+		"user",
+		"size",
+		"stars",
+		"topics",
 	}
 
 	for _, flagName := range c.FlagNames() {
-		ignore := false
-		for _, ignoreFlag := range ignoreFlags {
-			if ignoreFlag == flagName {
-				ignore = true
+		isQuery := false
+		for _, queryFlag := range queryFlags {
+			if queryFlag == flagName {
+				isQuery = true
+				break
 			}
 		}
-		if ignore == true {
+		if !isQuery {
 			continue
 		}
 
