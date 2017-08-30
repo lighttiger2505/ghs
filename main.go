@@ -51,52 +51,44 @@ var commandRepository = cli.Command{
 	Usage:   "Search repositorys",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:  "in",
-			Usage: "The in qualifier limits what fields are searched. With this qualifier you can restrict the search to just the repository name, description, README, or any combination of these. Without the qualifier, only the name and description are searched.",
-		},
-		cli.StringFlag{
-			Name:  "size",
-			Usage: "The size qualifier finds repositories that match a certain size (in kilobytes), using greater than, less than, and range qualifiers.",
-		},
-		cli.StringFlag{
-			Name:  "mirror",
-			Usage: "You can search repositories based on whether or not they're a mirror and are hosted elsewhere.",
-		},
-		cli.StringFlag{
-			Name:  "forks",
-			Usage: " The forks qualifier specifies the number of forks a repository should have, using greater than, less than, and range qualifiers.",
-		},
-		cli.StringFlag{
 			Name:  "created",
-			Usage: "You can filter repositories based on time of creation or time of last update. For repository creation, you can use the created qualifier; to find out when a repository was last updated, you'll want to use the pushed qualifier. The pushed qualifier will return a list of repositories, sorted by the most recent commit made on any branch in the repository.",
+			Usage: "Filters repositories based on date of creation.",
 		},
 		cli.StringFlag{
 			Name:  "pushed",
-			Usage: "You can filter repositories based on time of creation or time of last update. For repository creation, you can use the created qualifier; to find out when a repository was last updated, you'll want to use the pushed qualifier. The pushed qualifier will return a list of repositories, sorted by the most recent commit made on any branch in the repository.",
+			Usage: "Filters repositories based on when they were last updated.",
 		},
 		cli.StringFlag{
-			Name:  "user",
-			Usage: "To grab a list of a user's repositories.",
+			Name:  "forks",
+			Usage: "Filters repositories based on the number of forks.",
 		},
 		cli.StringFlag{
-			Name:  "org",
-			Usage: "To grab a list of a organization's repositories.",
-		},
-		cli.StringFlag{
-			Name:  "topic",
-			Usage: "You can find all of the repositories that are classified with a particular topic.",
-		},
-		cli.StringFlag{
-			Name:  "topics",
-			Usage: "You can find repositories by the number of applied topics, using the topics qualifier along with greater than, less than, and range qualifiers.",
+			Name:  "in",
+			Usage: "Qualifies which fields are searched. With this qualifier you can restrict the search to just the repository name, description, readme, or any combination of these.",
 		},
 		cli.StringFlag{
 			Name:  "language",
-			Usage: "You can also search repositories based on what language they're written in.",
+			Usage: "Searches repositories based on the language they're written in.",
+		},
+		cli.StringFlag{
+			Name:  "repo",
+			Usage: "Limits searches to a specific repository.",
+		},
+		cli.StringFlag{
+			Name:  "user",
+			Usage: "Limits searches to a specific user.",
+		},
+		cli.StringFlag{
+			Name:  "size",
+			Usage: "Finds repositories that match a certain size (in kilobytes).",
 		},
 		cli.StringFlag{
 			Name:  "stars",
-			Usage: "You can search repositories based on the number of stars a repository has, using greater than, less than, and range qualifiers",
+			Usage: "Searches repositories based on the number of stars.",
+		},
+		cli.StringFlag{
+			Name:  "topics",
+			Usage: "Filters repositories based on the specified topic.",
 		},
 		cli.StringFlag{
 			Name:  "sort, s",
@@ -104,7 +96,8 @@ var commandRepository = cli.Command{
 		},
 		cli.StringFlag{
 			Name:  "order, o",
-			Usage: "The sort order if sort parameter is provided. One of asc or desc. Default: desc",
+			Value: "desc",
+			Usage: "The sort order if sort parameter is provided. One of asc or desc.",
 		},
 		cli.BoolFlag{
 			Name:  "only",
