@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	// "github.com/ryanuber/columnize"
@@ -12,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -174,17 +172,12 @@ func doRepository(c *cli.Context) error {
 		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
 	}
 
-	// Draw spinner
-	s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	s.Start()
 
 	// Do repository search
 	result, resp, err := client.Search.Repositories(ctx, query, opts)
 
 	fmt.Println(resp.Request.URL)
 
-	// Clear spinner
-	s.Stop()
 
 	if err == nil {
 		// Draw result content
