@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
-	// "github.com/ryanuber/columnize"
+	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"net/http"
@@ -172,16 +172,18 @@ func doRepository(c *cli.Context) error {
 		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
 	}
 
-
 	// Do repository search
-	result, resp, err := client.Search.Repositories(ctx, query, opts)
-
-	fmt.Println(resp.Request.URL)
-
+	result, _, err := client.Search.Repositories(ctx, query, opts)
 
 	if err == nil {
 		// Draw result content
-		DrawTable(result.Repositories)
+		if c.Bool("only") {
+			DrawOnly(result.Repositories)
+		} else if c.Bool("oneline") {
+			DrawOneline(result.Repositories)
+		} else {
+			DrawTable(result.Repositories)
+		}
 	}
 
 	return err
@@ -222,15 +224,28 @@ func BuildQuery(c *cli.Context) string {
 	return strings.Join(query, " ")
 }
 
-func DrawOnly([]github.Repository) {
+func DrawOnly(repos []github.Repository) {
+	for _, repo := range repos {
+		fmt.Println(*repo.FullName)
+	}
 }
 
-func DrawOneline([]github.Repository) {
+func DrawOneline(repos []github.Repository) {
+
+	var datas []string
+	for _, repo := range repos {
+		var desc string
+		if repo.Description != nil {
+			desc = *repo.Description
+		}
+		data := *repo.FullName + "|" + desc
+		datas = append(datas, data)
+	}
+	result := columnize.SimpleFormat(datas)
+	fmt.Println(result)
 }
 
 func DrawTable(repos []github.Repository) {
-	fmt.Println(len(repos))
-
 	var datas [][]string
 	for _, repo := range repos {
 		var desc string
