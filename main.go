@@ -22,7 +22,9 @@ func main() {
 func newApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "ghs"
+	app.HelpName = "ghs"
 	app.Usage = "Call GitHub search API."
+	app.UsageText = "ghs [global options] command [command options] [query]"
 	app.Version = "0.0.1"
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
