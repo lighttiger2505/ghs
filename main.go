@@ -233,7 +233,7 @@ func doRepository(c *cli.Context) error {
 	client := github.NewClient(nil)
 
 	// Building search query
-	query := BuildQuery(c)
+	query := BuildRepositoryQuery(c)
 
 	// Setting search option
 	opts := &github.SearchOptions{
@@ -260,7 +260,7 @@ func doRepository(c *cli.Context) error {
 	return err
 }
 
-func BuildQuery(c *cli.Context) string {
+func BuildRepositoryQuery(c *cli.Context) string {
 	var query []string
 	queryFlags := []string{
 		"created",
