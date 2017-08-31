@@ -3,14 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
 )
 
 func main() {
@@ -223,7 +222,6 @@ var commandUser = cli.Command{
 }
 
 func doRepository(c *cli.Context) error {
-
 	// Validate args and flags
 	if len(c.Args()) < 1 {
 		return cli.NewExitError("is not input query", 1)
@@ -346,12 +344,71 @@ func doUser(c *cli.Context) error {
 }
 
 func doCode(c *cli.Context) error {
-	return nil
+	// Validate args and flags
+	if len(c.Args()) < 1 {
+		return cli.NewExitError("is not input query", 1)
+	}
+
+	ctx := context.Background()
+	client := github.NewClient(nil)
+
+	// Building search query
+	query := BuildCodeQuery(c)
+
+	// Setting search option
+	opts := &github.SearchOptions{
+		Sort:        c.String("sort"),
+		Order:       c.String("order"),
+		TextMatch:   false,
+		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
+	}
+
+	// Do repository search
+	result, _, err := client.Search.Code(ctx, query, opts)
+
+	if err == nil {
+		var datas []string
+		for _, code := range result.CodeResults {
+			data := code.GetName() + "|" + code.GetPath() + "|" + code.GetHTMLURL() + "|" + code.GetSHA()
+			datas = append(datas, data)
+		}
+		result := columnize.SimpleFormat(datas)
+		fmt.Println(result)
+	}
+
+	return err
 }
 
-func GetRequest(url string) string {
-	res, _ := http.Get(url)
-	defer res.Body.Close()
-	byteArray, _ := ioutil.ReadAll(res.Body)
-	return string(byteArray)
+func BuildCodeQuery(c *cli.Context) string {
+	var query []string
+	queryFlags := []string{
+		"in",
+		"language",
+		"fork",
+		"size",
+		"path",
+		"filename",
+		"extension",
+		"user",
+		"repo",
+	}
+
+	for _, flagName := range c.FlagNames() {
+		isQuery := false
+		for _, queryFlag := range queryFlags {
+			if queryFlag == flagName {
+				isQuery = true
+				break
+			}
+		}
+		if !isQuery {
+			continue
+		}
+
+		if c.String(flagName) != "" {
+			query = append(query, flagName+":"+c.String(flagName))
+		}
+	}
+	query = append(query, c.Args()[0])
+	return strings.Join(query, " ")
 }
