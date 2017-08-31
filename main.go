@@ -297,7 +297,7 @@ func BuildRepositoryQuery(c *cli.Context) string {
 
 func DrawOnly(repos []github.Repository) {
 	for _, repo := range repos {
-		fmt.Println(*repo.FullName)
+		fmt.Println(repo.GetFullName())
 	}
 }
 
@@ -305,11 +305,7 @@ func DrawOneline(repos []github.Repository) {
 
 	var datas []string
 	for _, repo := range repos {
-		var desc string
-		if repo.Description != nil {
-			desc = *repo.Description
-		}
-		data := *repo.FullName + "|" + desc
+		data := repo.GetFullName() + "|" + repo.GetDescription()
 		datas = append(datas, data)
 	}
 	result := columnize.SimpleFormat(datas)
@@ -319,20 +315,11 @@ func DrawOneline(repos []github.Repository) {
 func DrawTable(repos []github.Repository) {
 	var datas [][]string
 	for _, repo := range repos {
-		var desc string
-		if repo.Description != nil {
-			desc = *repo.Description
-		}
-		var lang string
-		if repo.Language != nil {
-			lang = *repo.Language
-		}
-
 		data := []string{
-			*repo.FullName,
-			fmt.Sprint(*repo.StargazersCount),
-			lang,
-			desc,
+			repo.GetFullName(),
+			fmt.Sprint(repo.GetStargazersCount()),
+			repo.GetLanguage(),
+			repo.GetDescription(),
 		}
 		datas = append(datas, data)
 	}
