@@ -44,9 +44,10 @@ func newApp() *cli.App {
 }
 
 var commandRepository = cli.Command{
-	Name:    "repository",
-	Aliases: []string{"repo", "r"},
-	Usage:   "Search repositorys",
+	Name:      "repository",
+	UsageText: "ghs repository [command options] [query]",
+	Aliases:   []string{"repo", "r"},
+	Usage:     "Search repositorys",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "created",
