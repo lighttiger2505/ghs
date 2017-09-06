@@ -36,13 +36,6 @@ func newApp() *cli.App {
 	return app
 }
 
-var commandCommit = cli.Command{
-	Name:    "commit",
-	Aliases: []string{"m"},
-	Usage:   "Search commits",
-	Action:  doCommit,
-}
-
 var commandIssue = cli.Command{
 	Name:    "issue",
 	Aliases: []string{"i"},
@@ -55,10 +48,6 @@ var commandUser = cli.Command{
 	Aliases: []string{"u"},
 	Usage:   "Search users",
 	Action:  doUser,
-}
-
-func doCommit(c *cli.Context) error {
-	return nil
 }
 
 func doIssue(c *cli.Context) error {
