@@ -1,13 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli"
 )
 
 func main() {
-	newApp().Run(os.Args)
+	err := newApp().Run(os.Args)
+	var exitCode = 0
+	if err != nil {
+		fmt.Println(os.Stderr, err.Error())
+		exitCode = 1
+	}
+	os.Exit(exitCode)
 }
 
 func newApp() *cli.App {
