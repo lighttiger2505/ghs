@@ -87,15 +87,12 @@ func doUser(c *cli.Context) error {
 	// Building search query
 	query := BuildQuery(c, queryFlagsUser)
 
-	// Setting search option
-	opts := &github.SearchOptions{
-		Sort:        c.String("sort"),
-		Order:       c.String("order"),
-		TextMatch:   false,
-		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
-	}
+	// Building search options
+	opts := BuildSearchOptions(c)
 
-	// Do repository search
+	// Do search
+	client := github.NewClient(nil)
+	ctx := context.Background()
 	result, _, err := client.Search.Users(ctx, query, opts)
 
 	if err == nil {

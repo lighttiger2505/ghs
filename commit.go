@@ -128,21 +128,15 @@ func doCommit(c *cli.Context) error {
 		return cli.NewExitError("is not input query", 1)
 	}
 
-	ctx := context.Background()
-	client := github.NewClient(nil)
-
 	// Building search query
 	query := BuildQuery(c, queryFlagsCommit)
 
-	// Setting search option
-	opts := &github.SearchOptions{
-		Sort:        c.String("sort"),
-		Order:       c.String("order"),
-		TextMatch:   false,
-		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
-	}
+	// Building search options
+	opts := BuildSearchOptions(c)
 
-	// Do repository search
+	// Do search
+	client := github.NewClient(nil)
+	ctx := context.Background()
 	result, _, err := client.Search.Commits(ctx, query, opts)
 
 	if err == nil {
@@ -157,45 +151,4 @@ func doCommit(c *cli.Context) error {
 	}
 
 	return err
-}
-
-func BuildCommitQuery(c *cli.Context) string {
-	var query []string
-	queryFlags := []string{
-		"author",
-		"commiter",
-		"author-name",
-		"committer-name",
-		"author-email",
-		"committer-email",
-		"author-date",
-		"ommitter-date",
-		"merge",
-		"hash",
-		"parent",
-		"tree",
-		"is",
-		"user",
-		"org",
-		"repo",
-	}
-
-	for _, flagName := range c.FlagNames() {
-		isQuery := false
-		for _, queryFlag := range queryFlags {
-			if queryFlag == flagName {
-				isQuery = true
-				break
-			}
-		}
-		if !isQuery {
-			continue
-		}
-
-		if c.String(flagName) != "" {
-			query = append(query, flagName+":"+c.String(flagName))
-		}
-	}
-	query = append(query, c.Args()[0])
-	return strings.Join(query, " ")
 }

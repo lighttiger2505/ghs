@@ -166,21 +166,15 @@ func doIssue(c *cli.Context) error {
 		return cli.NewExitError("is not input query", 1)
 	}
 
-	ctx := context.Background()
-	client := github.NewClient(nil)
-
 	// Building search query
 	query := BuildQuery(c, queryFlagsIssue)
 
-	// Setting search option
-	opts := &github.SearchOptions{
-		Sort:        c.String("sort"),
-		Order:       c.String("order"),
-		TextMatch:   false,
-		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
-	}
+	// Building search options
+	opts := BuildSearchOptions(c)
 
-	// Do repository search
+	// Do search
+	client := github.NewClient(nil)
+	ctx := context.Background()
 	result, _, err := client.Search.Commits(ctx, query, opts)
 
 	if err == nil {
