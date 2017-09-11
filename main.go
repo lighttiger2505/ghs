@@ -50,17 +50,6 @@ var commandIssue = cli.Command{
 	Action:  doIssue,
 }
 
-var commandUser = cli.Command{
-	Name:    "user",
-	Aliases: []string{"u"},
-	Usage:   "Search users",
-	Action:  doUser,
-}
-
 func doIssue(c *cli.Context) error {
-	return nil
-}
-
-func doUser(c *cli.Context) error {
 	return nil
 }
