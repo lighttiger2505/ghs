@@ -4,13 +4,25 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
+
+var queryFlagsRepository = []string{
+	"created",
+	"pushed",
+	"forks",
+	"in",
+	"language",
+	"repo",
+	"user",
+	"size",
+	"stars",
+	"topics",
+}
 
 var commandRepository = cli.Command{
 	Name:      "repository",
@@ -103,7 +115,7 @@ func doRepository(c *cli.Context) error {
 	client := github.NewClient(nil)
 
 	// Building search query
-	query := BuildRepositoryQuery(c)
+	query := BuildQuery(c, queryFlagsRepository)
 
 	// Setting search option
 	opts := &github.SearchOptions{
@@ -128,41 +140,6 @@ func doRepository(c *cli.Context) error {
 	}
 
 	return err
-}
-
-func BuildRepositoryQuery(c *cli.Context) string {
-	var query []string
-	queryFlags := []string{
-		"created",
-		"pushed",
-		"forks",
-		"in",
-		"language",
-		"repo",
-		"user",
-		"size",
-		"stars",
-		"topics",
-	}
-
-	for _, flagName := range c.FlagNames() {
-		isQuery := false
-		for _, queryFlag := range queryFlags {
-			if queryFlag == flagName {
-				isQuery = true
-				break
-			}
-		}
-		if !isQuery {
-			continue
-		}
-
-		if c.String(flagName) != "" {
-			query = append(query, flagName+":"+c.String(flagName))
-		}
-	}
-	query = append(query, c.Args()[0])
-	return strings.Join(query, " ")
 }
 
 func DrawOnly(repos []github.Repository) {

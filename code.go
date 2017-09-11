@@ -3,12 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
+
+var queryFlagsCode = []string{
+	"in",
+	"language",
+	"fork",
+	"size",
+	"path",
+	"filename",
+	"extension",
+	"user",
+	"repo",
+}
 
 var commandCode = cli.Command{
 	Name:      "code",
@@ -97,7 +108,7 @@ func doCode(c *cli.Context) error {
 	client := github.NewClient(nil)
 
 	// Building search query
-	query := BuildCodeQuery(c)
+	query := BuildQuery(c, queryFlagsCode)
 
 	// Setting search option
 	opts := &github.SearchOptions{
@@ -121,38 +132,4 @@ func doCode(c *cli.Context) error {
 	}
 
 	return err
-}
-
-func BuildCodeQuery(c *cli.Context) string {
-	var query []string
-	queryFlags := []string{
-		"in",
-		"language",
-		"fork",
-		"size",
-		"path",
-		"filename",
-		"extension",
-		"user",
-		"repo",
-	}
-
-	for _, flagName := range c.FlagNames() {
-		isQuery := false
-		for _, queryFlag := range queryFlags {
-			if queryFlag == flagName {
-				isQuery = true
-				break
-			}
-		}
-		if !isQuery {
-			continue
-		}
-
-		if c.String(flagName) != "" {
-			query = append(query, flagName+":"+c.String(flagName))
-		}
-	}
-	query = append(query, c.Args()[0])
-	return strings.Join(query, " ")
 }

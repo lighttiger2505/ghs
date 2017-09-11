@@ -10,6 +10,25 @@ import (
 	"github.com/urfave/cli"
 )
 
+var queryFlagsCommit = []string{
+	"author",
+	"commiter",
+	"author-name",
+	"committer-name",
+	"author-email",
+	"committer-email",
+	"author-date",
+	"ommitter-date",
+	"merge",
+	"hash",
+	"parent",
+	"tree",
+	"is",
+	"user",
+	"org",
+	"repo",
+}
+
 var commandCommit = cli.Command{
 	Name:      "commit",
 	UsageText: "ghs commit [command options] [query]",
@@ -113,7 +132,7 @@ func doCommit(c *cli.Context) error {
 	client := github.NewClient(nil)
 
 	// Building search query
-	query := BuildRepositoryQuery(c)
+	query := BuildQuery(c, queryFlagsCommit)
 
 	// Setting search option
 	opts := &github.SearchOptions{
@@ -128,7 +147,6 @@ func doCommit(c *cli.Context) error {
 
 	if err == nil {
 		// Draw result content
-		fmt.Println("検索できたよー")
 		var datas []string
 		for _, commit := range result.Commits {
 			data := commit.Commit.GetSHA() + "|" + commit.Commit.GetMessage()

@@ -3,12 +3,37 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
+
+var queryFlagsIssue = []string{
+	"type",
+	"in",
+	"author",
+	"assignee",
+	"mentions",
+	"commenter",
+	"involves",
+	"team",
+	"state",
+	"no",
+	"language",
+	"is",
+	"created",
+	"updated",
+	"merged",
+	"status",
+	"head",
+	"base",
+	"close",
+	"comments",
+	"user",
+	"repo",
+	"project",
+}
 
 var commandIssue = cli.Command{
 	Name:      "issue",
@@ -145,7 +170,7 @@ func doIssue(c *cli.Context) error {
 	client := github.NewClient(nil)
 
 	// Building search query
-	query := BuildRepositoryQuery(c)
+	query := BuildQuery(c, queryFlagsIssue)
 
 	// Setting search option
 	opts := &github.SearchOptions{
@@ -170,52 +195,4 @@ func doIssue(c *cli.Context) error {
 	}
 
 	return err
-}
-
-func BuildIssueQuery(c *cli.Context) string {
-	var query []string
-	queryFlags := []string{
-		"type",
-		"in",
-		"author",
-		"assignee",
-		"mentions",
-		"commenter",
-		"involves",
-		"team",
-		"state",
-		"no",
-		"language",
-		"is",
-		"created",
-		"updated",
-		"merged",
-		"status",
-		"head",
-		"base",
-		"close",
-		"comments",
-		"user",
-		"repo",
-		"project",
-	}
-
-	for _, flagName := range c.FlagNames() {
-		isQuery := false
-		for _, queryFlag := range queryFlags {
-			if queryFlag == flagName {
-				isQuery = true
-				break
-			}
-		}
-		if !isQuery {
-			continue
-		}
-
-		if c.String(flagName) != "" {
-			query = append(query, flagName+":"+c.String(flagName))
-		}
-	}
-	query = append(query, c.Args()[0])
-	return strings.Join(query, " ")
 }
