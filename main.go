@@ -42,14 +42,3 @@ func newApp() *cli.App {
 	}
 	return app
 }
-
-var commandIssue = cli.Command{
-	Name:    "issue",
-	Aliases: []string{"i"},
-	Usage:   "Search issues",
-	Action:  doIssue,
-}
-
-func doIssue(c *cli.Context) error {
-	return nil
-}
