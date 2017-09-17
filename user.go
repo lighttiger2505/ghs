@@ -23,56 +23,39 @@ var commandUser = cli.Command{
 	Name:    "user",
 	Aliases: []string{"u"},
 	Usage:   "Search users",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "type",
-			Usage: "With this qualifier you can restrict the search to just personal accounts (user) or just organization accounts (org).",
-		},
-		cli.StringFlag{
-			Name:  "in",
-			Usage: "Qualifies which fields are searched. With this qualifier you can restrict the search to just the username (login), public email (email), full name (fullname), or any combination of these.",
-		},
-		cli.StringFlag{
-			Name:  "repos",
-			Usage: "Filters users based on the number of repositories they have.",
-		},
-		cli.StringFlag{
-			Name:  "location",
-			Usage: "Filter users by the location indicated in their profile.",
-		},
-		cli.StringFlag{
-			Name:  "language",
-			Usage: "Search for users that have repositories that match a certain language.",
-		},
-		cli.StringFlag{
-			Name:  "created",
-			Usage: "Filter users based on when they joined.",
-		},
-		cli.StringFlag{
-			Name:  "followers",
-			Usage: "Filter users based on the number of followers they have.",
-		},
-		cli.StringFlag{
-			Name:  "sort, s",
-			Usage: "The sort field. One of stars, forks, or updated. Default: results are sorted by best match.",
-		},
-		cli.StringFlag{
-			Name:  "order, o",
-			Value: "desc",
-			Usage: "The sort order if sort parameter is provided. One of asc or desc.",
-		},
-		cli.IntFlag{
-			Name:  "num, n",
-			Value: 10,
-			Usage: "Display num of search results.",
-		},
-		cli.IntFlag{
-			Name:  "page, p",
-			Value: 1,
-			Usage: "Display page of search results.",
-		},
+	Flags:   append(flagUser, flagCommon...),
+	Action:  doUser,
+}
+
+var flagUser = []cli.Flag{
+	cli.StringFlag{
+		Name:  "type",
+		Usage: "With this qualifier you can restrict the search to just personal accounts (user) or just organization accounts (org).",
 	},
-	Action: doUser,
+	cli.StringFlag{
+		Name:  "in",
+		Usage: "Qualifies which fields are searched. With this qualifier you can restrict the search to just the username (login), public email (email), full name (fullname), or any combination of these.",
+	},
+	cli.StringFlag{
+		Name:  "repos",
+		Usage: "Filters users based on the number of repositories they have.",
+	},
+	cli.StringFlag{
+		Name:  "location",
+		Usage: "Filter users by the location indicated in their profile.",
+	},
+	cli.StringFlag{
+		Name:  "language",
+		Usage: "Search for users that have repositories that match a certain language.",
+	},
+	cli.StringFlag{
+		Name:  "created",
+		Usage: "Filter users based on when they joined.",
+	},
+	cli.StringFlag{
+		Name:  "followers",
+		Usage: "Filter users based on the number of followers they have.",
+	},
 }
 
 func doUser(c *cli.Context) error {

@@ -29,80 +29,51 @@ var commandRepository = cli.Command{
 	UsageText: "ghs repository [command options] [query]",
 	Aliases:   []string{"repo", "r"},
 	Usage:     "Search repositorys",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "created",
-			Usage: "Filters repositories based on date of creation.",
-		},
-		cli.StringFlag{
-			Name:  "pushed",
-			Usage: "Filters repositories based on when they were last updated.",
-		},
-		cli.StringFlag{
-			Name:  "forks",
-			Usage: "Filters repositories based on the number of forks.",
-		},
-		cli.StringFlag{
-			Name:  "in",
-			Usage: "Qualifies which fields are searched. With this qualifier you can restrict the search to just the repository name, description, readme, or any combination of these.",
-		},
-		cli.StringFlag{
-			Name:  "language",
-			Usage: "Searches repositories based on the language they're written in.",
-		},
-		cli.StringFlag{
-			Name:  "repo",
-			Usage: "Limits searches to a specific repository.",
-		},
-		cli.StringFlag{
-			Name:  "user",
-			Usage: "Limits searches to a specific user.",
-		},
-		cli.StringFlag{
-			Name:  "size",
-			Usage: "Finds repositories that match a certain size (in kilobytes).",
-		},
-		cli.StringFlag{
-			Name:  "stars",
-			Usage: "Searches repositories based on the number of stars.",
-		},
-		cli.StringFlag{
-			Name:  "topics",
-			Usage: "Filters repositories based on the specified topic.",
-		},
-		cli.StringFlag{
-			Name:  "sort, s",
-			Usage: "The sort field. One of stars, forks, or updated. Default: results are sorted by best match.",
-		},
-		cli.StringFlag{
-			Name:  "order, o",
-			Value: "desc",
-			Usage: "The sort order if sort parameter is provided. One of asc or desc.",
-		},
-		cli.IntFlag{
-			Name:  "num, n",
-			Value: 10,
-			Usage: "Display num of search results.",
-		},
-		cli.IntFlag{
-			Name:  "page, p",
-			Value: 1,
-			Usage: "Display page of search results.",
-		},
-		cli.BoolFlag{
-			Name:  "only",
-			Usage: "Draw repository full name only",
-		},
-		cli.BoolFlag{
-			Name:  "oneline",
-			Usage: "Draw repository online",
-		},
-		cli.BoolFlag{
-			Name:  "table",
-			Usage: "Draw table",
-		},
+	Flags:     append(flagRepository, flagCommon...),
+	Action:    doRepository,
+}
+
+var flagRepository = []cli.Flag{
+	cli.StringFlag{
+		Name:  "created",
+		Usage: "Filters repositories based on date of creation.",
 	},
-	Action: doRepository,
+	cli.StringFlag{
+		Name:  "pushed",
+		Usage: "Filters repositories based on when they were last updated.",
+	},
+	cli.StringFlag{
+		Name:  "forks",
+		Usage: "Filters repositories based on the number of forks.",
+	},
+	cli.StringFlag{
+		Name:  "in",
+		Usage: "Qualifies which fields are searched. With this qualifier you can restrict the search to just the repository name, description, readme, or any combination of these.",
+	},
+	cli.StringFlag{
+		Name:  "language",
+		Usage: "Searches repositories based on the language they're written in.",
+	},
+	cli.StringFlag{
+		Name:  "repo",
+		Usage: "Limits searches to a specific repository.",
+	},
+	cli.StringFlag{
+		Name:  "user",
+		Usage: "Limits searches to a specific user.",
+	},
+	cli.StringFlag{
+		Name:  "size",
+		Usage: "Finds repositories that match a certain size (in kilobytes).",
+	},
+	cli.StringFlag{
+		Name:  "stars",
+		Usage: "Searches repositories based on the number of stars.",
+	},
+	cli.StringFlag{
+		Name:  "topics",
+		Usage: "Filters repositories based on the specified topic.",
+	},
 }
 
 func doRepository(c *cli.Context) error {
