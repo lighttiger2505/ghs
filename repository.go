@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/google/go-github/github"
-	"github.com/olekukonko/tablewriter"
 	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
@@ -93,28 +92,19 @@ func doRepository(c *cli.Context) error {
 	ctx := context.Background()
 	result, _, err := client.Search.Repositories(ctx, query, opts)
 
+	// Draw result
 	if err == nil {
-		// Draw result content
-		if c.Bool("only") {
-			DrawOnly(result.Repositories)
-		} else if c.Bool("oneline") {
-			DrawOneline(result.Repositories)
+		if c.Bool("oneline") {
+			DrawRepositoryOneline(result.Repositories)
 		} else {
-			DrawTable(result.Repositories)
+			DrawRepositoryDefault(result.Repositories)
 		}
 	}
 
 	return err
 }
 
-func DrawOnly(repos []github.Repository) {
-	for _, repo := range repos {
-		fmt.Println(repo.GetFullName())
-	}
-}
-
-func DrawOneline(repos []github.Repository) {
-
+func DrawRepositoryOneline(repos []github.Repository) {
 	var datas []string
 	for _, repo := range repos {
 		data := repo.GetFullName() + "|" + repo.GetDescription()
@@ -124,23 +114,13 @@ func DrawOneline(repos []github.Repository) {
 	fmt.Println(result)
 }
 
-func DrawTable(repos []github.Repository) {
-	var datas [][]string
+func DrawRepositoryDefault(repos []github.Repository) {
 	for _, repo := range repos {
-		data := []string{
-			repo.GetFullName(),
-			fmt.Sprint(repo.GetStargazersCount()),
-			repo.GetLanguage(),
-			repo.GetDescription(),
-		}
-		datas = append(datas, data)
+		DrawMainContent("repo", repo.GetFullName())
+		DrawSubContentOneline("Language", repo.GetLanguage())
+		DrawSubContentOneline("Star", fmt.Sprint(repo.GetStargazersCount()))
+		DrawSubContentOneline("Updated", repo.GetUpdatedAt().Format("Mon Jan 2 15:04:05 -0700 MST 2006"))
+		DrawSubContentMultiLine(repo.GetDescription())
+		fmt.Fprintln(os.Stdout)
 	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Star", "Language", "Description"})
-
-	for _, data := range datas {
-		table.Append(data)
-	}
-	table.Render()
 }
