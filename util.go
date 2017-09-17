@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/google/go-github/github"
 	"github.com/urfave/cli"
 )
@@ -64,4 +67,25 @@ func BuildSearchOptions(c *cli.Context) *github.SearchOptions {
 		ListOptions: github.ListOptions{PerPage: c.Int("num"), Page: c.Int("page")},
 	}
 	return opts
+}
+
+func DrawMainContent(contentType string, value string) {
+	c := color.New(color.FgYellow)
+	c.Fprintf(os.Stdout, "%s %s", contentType, value)
+	fmt.Fprintln(os.Stdout)
+}
+
+func DrawSubContentOneline(contentType string, value string) {
+	if len(value) > 0 {
+		fmt.Fprintf(os.Stdout, "%s: %s", contentType, value)
+		fmt.Fprintln(os.Stdout)
+	}
+}
+
+func DrawSubContentMultiLine(value string) {
+	if len(value) > 0 {
+		fmt.Fprintln(os.Stdout)
+		fmt.Fprintf(os.Stdout, "    %s", value)
+		fmt.Fprintln(os.Stdout)
+	}
 }
