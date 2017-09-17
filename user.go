@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/google/go-github/github"
-	// "github.com/ryanuber/columnize"
+	"github.com/ryanuber/columnize"
 	"github.com/urfave/cli"
 )
 
@@ -64,9 +65,6 @@ func doUser(c *cli.Context) error {
 		return cli.NewExitError("is not input query", 1)
 	}
 
-	ctx := context.Background()
-	client := github.NewClient(nil)
-
 	// Building search query
 	query := BuildQuery(c, queryFlagsUser)
 
@@ -78,16 +76,40 @@ func doUser(c *cli.Context) error {
 	ctx := context.Background()
 	result, _, err := client.Search.Users(ctx, query, opts)
 
+	// Draw result
 	if err == nil {
-		var datas []string
-		for _, user := range result.Users {
-			data := user.GetLogin()
-			datas = append(datas, data)
-			fmt.Println(data)
+		if c.Bool("oneline") {
+			DrawUserOneline(result.Users)
+		} else {
+			DrawUserDefault(result.Users)
 		}
-		// result := columnize.SimpleFormat(datas)
-		// fmt.Println(result)
 	}
 
 	return err
+}
+
+func DrawUserOneline(users []github.User) {
+	var datas []string
+	for _, user := range users {
+		data := user.GetLogin()
+		datas = append(datas, data)
+	}
+	result := columnize.SimpleFormat(datas)
+	fmt.Println(result)
+}
+
+func DrawUserDefault(users []github.User) {
+	client := github.NewClient(nil)
+	ctx := context.Background()
+
+	for _, user := range users {
+		DrawMainContent("user", user.GetLogin())
+
+		userDetail, _, _ := client.Users.Get(ctx, user.GetLogin())
+		DrawSubContentOneline("Name", userDetail.GetName())
+		DrawSubContentOneline("Location", userDetail.GetLocation())
+		DrawSubContentOneline("Email", userDetail.GetEmail())
+		DrawSubContentMultiLine(userDetail.GetBio())
+		fmt.Fprintln(os.Stdout)
+	}
 }
